@@ -4,6 +4,7 @@
 <head>
 	<title>@ViewBag.Title</title>
 	<link rel="stylesheet" href="https://unpkg.com/@@picocss/pico@@latest/css/pico.classless.min.css">
+	<link rel="stylesheet" href="~/css/styles.css" />
 </head>
 <body>
 	<header>
@@ -13,12 +14,13 @@
 		</nav>
 		<partial name="_TimeBox" />
 	</header>
-	<h1>@ViewBag.Header</h1>
 
-	<div>
+
+
+	<main class="page-wrapper">
+	<h1>@ViewBag.Header</h1>
 		@RenderBody()
-	</div>
-	<partial name="_TimeBox" />
+	</main>
 	<hr />
 	<footer>©Grupp3 Employees</footer>
 	@RenderSection("scripts", false);

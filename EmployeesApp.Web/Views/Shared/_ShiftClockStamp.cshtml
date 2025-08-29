@@ -1,0 +1,13 @@
+﻿@model Employee
+
+<form asp-controller="Employees"
+	  asp-action="ToggleShiftClock"
+	  asp-route-id="@Model.Id"
+	  method="post" style="margin:0">
+	@Html.AntiForgeryToken()
+
+	<button type="submit" class="stamp-button">
+		@(Model.ClockedIn ? "Stämpla ut" : "Stämpla in")
+	</button>
+
+</form>

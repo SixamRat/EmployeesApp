@@ -1,0 +1,27 @@
+﻿@model WorkShift
+@{
+	if (Model.ShiftStartTime.HasValue)
+	{
+		<p>Starttid: @Model.ShiftStartTime</p>
+	}
+	if (Model.ShiftEndTime.HasValue)
+	{
+		<p>Sluttid: @Model.ShiftEndTime</p>
+
+		if (Model.WorkTimeSpan.HasValue)
+		{
+			<p>Total tid för pass: @Model.WorkTimeSpan.Value.ToString(@"hh\:mm\:ss")</p>
+		}
+	}
+	else if (Model.ShiftStartTime is TimeOnly s)
+	{
+		var now = TimeOnly.FromDateTime(DateTime.Now);
+
+
+		<p>Pass pågående, arbetat tid hittills: @((now - s).ToString(@"hh\:mm\:ss"))</p>
+		
+			
+			
+	}
+
+}

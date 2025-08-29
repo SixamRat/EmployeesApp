@@ -10,11 +10,11 @@ namespace Employees.Test
         {
             EmployeeService sut_Service = new EmployeeService();
 
-            Employee sut_Model = new Employee() { Name = "Rasmus", Email = "rasmus-lackberg@hotmail.com"};
+            Employee sut_Employee = new Employee() { Name = "Rasmus", Email = "rasmus-lackberg@hotmail.com"};
 
-            sut_Service.RegisterNew(sut_Model);
+            sut_Service.RegisterNew(sut_Employee);
 
-            Assert.Contains(sut_Model, sut_Service.GetAll());
+            Assert.Contains(sut_Employee, sut_Service.GetAll());
         }
     }
 }

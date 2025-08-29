@@ -39,4 +39,22 @@ public class EmployeesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+
+    [HttpPost("toggle-clock/{id}")]
+    public IActionResult ToggleShiftClock(int id)
+    {
+
+        employeeService.ToggleShiftClock(id);
+
+        var referer = Request.Headers["Referer"].ToString();
+        if (!string.IsNullOrEmpty(referer))
+        {
+            return Redirect(referer);
+        }
+
+        return RedirectToAction(nameof(Index));
+
+
+    }
+
 }

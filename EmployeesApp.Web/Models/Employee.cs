@@ -16,5 +16,11 @@ namespace EmployeesApp.Web.Models
         [EmailAddress(ErrorMessage = "Måste ange giltig emailadress!")]
         [Display(Name = "Email", Prompt = "Ange din emailadress.")]
         public required string Email { get; set; }
+
+        public bool ClockedIn { get; set; } = false;
+
+        public Dictionary<DateOnly, List<WorkShift>> WorkShifts = new Dictionary<DateOnly, List<WorkShift>>();
+
+        
     }
 }

@@ -2,7 +2,93 @@
 @{
 	ViewBag.Title = $"{Model.Name} Details";
 	ViewBag.Header = $"Details for {Model.Name}";
+	var today = DateOnly.FromDateTime(DateTime.Today);
 }
+<partial name="_ShiftClockStamp" model="Model" />
 <p>Employee ID: @Model.Id</p>
 <p>Employee name: @Model.Name</p>
 <p>Employee email: @Model.Email</p>
+
+<h3>@(Model.Name + "'s") Arbetspass för @today</h3>
+
+@{
+	if (Model.WorkShifts.Count > 0 && Model.WorkShifts.TryGetValue(today, out var list))
+	{
+		if (list is not null && list.Count > 0)
+		{
+			TimeSpan total = TimeSpan.Zero;
+
+			int shiftCount = 1;
+
+			foreach (var shift in list)
+			{
+				<h3>Pass #@shiftCount</h3>
+				<partial name="_WorkShift" model="shift"/>
+
+				if(shift.WorkTimeSpan != null && shift.WorkTimeSpan.HasValue)
+				{
+					total += (TimeSpan)shift.WorkTimeSpan;
+				}
+				shiftCount++;
+			}
+			<h2>Total arbetstid för dagen: @total</h2>
+
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+@* @{
+	DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+	if (Model.WorkTimes != null && Model.WorkTimes.TryGetValue(today, out _))
+	{
+
+		if (Model.WorkTimes[today].Count > 0 && Model.WorkTimes[today] != null)
+		{
+			List<WorkShift> workTimes = Model.WorkTimes[today];
+			TimeSpan? totalWorkHoursForDay = null;
+			int j = 1;
+			for (int i = 0; i < workTimes.Count; i++)
+			{
+				var workTime = workTimes[i];
+
+				bool startTimeExists = workTime.ShiftStartTime is not null && workTime.ShiftStartTime.HasValue;
+				bool endTimeExists = workTime.ShiftEndTime is not null && workTime.ShiftEndTime.HasValue;
+				bool timeSpanExists = workTime.WorkTimeSpan is not null && workTime.WorkTimeSpan.HasValue;
+
+
+				<p style="font-weight: bold">Pass # @j</p>
+				if (startTimeExists)
+				{
+					<p>Instämplad: @workTime.ShiftStartTime.Value.ToString()</p>
+
+				}
+				if (endTimeExists)
+				{
+					<p>Utstämplad: @workTime.ShiftEndTime.Value.ToString()</p>
+				}
+				if (timeSpanExists)
+				{
+					<p>Total arbetstid(HH:mm:ss): @workTime.WorkTimeSpan.Value.ToString(@"hh\:mm\:ss")</p>
+
+				}
+				totalWorkHoursForDay += workTime.WorkTimeSpan;
+				j++;
+			}
+
+			<h3>Total arbetstid för dagen: @totalWorkHoursForDay.Value.ToString(@"hh\:mm\:ss")</h3>
+			
+		}
+
+
+
+	}
+} *@

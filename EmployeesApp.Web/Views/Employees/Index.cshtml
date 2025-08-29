@@ -8,6 +8,11 @@
 <ul>
 	@foreach (var item in Model)
 	{
-		<li><a asp-controller="Employees" asp-action="Details" asp-route-id="@item.Id">@item.Name</a></li>
+		<li>
+			<div class="list-row">
+				<a asp-controller="Employees" asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
+				<partial name="_ShiftClockStamp" model="item" />
+			</div>
+		</li>
 	}
 </ul>
