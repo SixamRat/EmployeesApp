@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace EmployeesApp.Web.Controllers;
 public class EmployeesController : Controller
 {
-    EmployeeService employeeService = new EmployeeService();
+    static EmployeeService employeeService = new EmployeeService();
 
     [Route("")]
     public IActionResult Index()
