@@ -8,9 +8,9 @@
 	{
 		<p>Sluttid: @Model.ShiftEndTime</p>
 
-		if (Model.WorkTimeSpan.HasValue)
+		if (Model.WorkShiftTime.HasValue)
 		{
-			<p>Total tid för pass: @Model.WorkTimeSpan.Value.ToString(@"hh\:mm\:ss")</p>
+			<p>Total tid för pass: @Model.WorkShiftTime.Value.ToString(@"hh\:mm\:ss")</p>
 		}
 	}
 	else if (Model.ShiftStartTime is TimeOnly s)

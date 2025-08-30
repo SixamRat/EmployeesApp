@@ -20,14 +20,14 @@
 
 			int shiftCount = 1;
 
-			foreach (var shift in list)
+			foreach (var workShift in list)
 			{
 				<h3>Pass #@shiftCount</h3>
-				<partial name="_WorkShift" model="shift"/>
+				<partial name="_WorkShift" model="workShift"/>
 
-				if(shift.WorkTimeSpan != null && shift.WorkTimeSpan.HasValue)
+				if(workShift.WorkShiftTime != null && workShift.WorkShiftTime.HasValue)
 				{
-					total += (TimeSpan)shift.WorkTimeSpan;
+					total += (TimeSpan)workShift.WorkShiftTime;
 				}
 				shiftCount++;
 			}

@@ -31,17 +31,16 @@ namespace EmployeesApp.Web.Services
 
         public void ToggleShiftClock(int employeeId)
         {
+            var today = DateOnly.FromDateTime(DateTime.Today); // Dagens datum i DateOnly
+            var timeNow = TimeOnly.FromDateTime(DateTime.Now); // Tiden nu i TimeOnly
 
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            var timeNow = TimeOnly.FromDateTime(DateTime.Now);
+            var employee = GetById(employeeId); // Hämta employee utifrån ID
 
-            var e = GetById(employeeId);
+            employee.WorkShifts ??= new(); // Är Dictionaryn null, skapa ny.
 
-            e.WorkShifts ??= new(); // Är Dictionaryn null, skapa ny.
+            var list = GetOrCreateList(employee.WorkShifts, today); // Egen privat metod
 
-            var list = GetOrCreateList(e.WorkShifts, today);
-
-            if (list.Count == 0)
+            if (list.Count == 0) // Om listan är tom, skapa ett nytt skift/arbetspass med ID 1
             {
                 list.Add(new WorkShift()
                 {
@@ -49,23 +48,28 @@ namespace EmployeesApp.Web.Services
                 });
             }
 
-            if (e.ClockedIn)
+            if (employee.ClockedIn) // Om employee är instämplad
             {
 
-                var currentWorkShift = list
-                    .FirstOrDefault(ws => !ws.ShiftEndTime.HasValue);
+                // Försök hitta ett öppet skift(endast starttid)
+                var openShift = list 
+                    .FirstOrDefault(ws => !ws.ShiftEndTime.HasValue); 
 
-                if (currentWorkShift != null)
+                // Om den hittar öppet skift, sätt sluttid till timeNow och clocka ut
+                if (openShift is not null) 
                 {
-                    currentWorkShift.ShiftEndTime = timeNow;
-                    e.ClockedIn = false;
-                    return;
+                    openShift.ShiftEndTime = timeNow;
+                    employee.ClockedIn = false;
                 }
+                return;
 
             }
-            if (!e.ClockedIn)
+
+            if (!employee.ClockedIn) // Om employee ej är instämplad
             {
 
+                // Om alla skift är stängda(har sluttid),
+                // - skapa nytt skift och sätt starttid till timeNow
                 if (list.All(ws => ws.ShiftEndTime.HasValue))
                 {
                     list.Add(new WorkShift()
@@ -73,10 +77,11 @@ namespace EmployeesApp.Web.Services
                         Id = list.Max(ws => ws.Id) + 1,
                         ShiftStartTime = timeNow
                     });
-                    e.ClockedIn = true;
+                    employee.ClockedIn = true;
                     return;
                 }
-                else
+                else // Om ett skift är öppet men ej har starttid (dvs endast första ggn),
+                    //   - sätt starttid till timeNow och stämpla in.
                 {
                     var currentShift = list
                         .FirstOrDefault(ws => !ws.ShiftStartTime.HasValue);
@@ -84,103 +89,19 @@ namespace EmployeesApp.Web.Services
                     if (currentShift != null)
                     {
                         currentShift.ShiftStartTime = timeNow;
-                        e.ClockedIn = true;
+                        employee.ClockedIn = true;
                         return;
-
                     }
-
                 }
-
             }
-
-
-
         }
-
+        
         private static List<WorkShift> GetOrCreateList(Dictionary<DateOnly, List<WorkShift>> dict, DateOnly day)
         {
             if (!dict.TryGetValue(day, out var list))
                 dict[day] = list = new List<WorkShift>();
             return list;
         }
-
-
-
-        //public int ToggleShiftClock(int id)
-        //{
-        //    DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-        //    TimeOnly timeNow = TimeOnly.FromDateTime(DateTime.Now);
-
-        //    Employee employee = GetById(id);
-
-        //    employee.workTimes ??= new(); // Skapa ny Dictionary för workTimes om den inte redan finns
-
-        //    if (!employee.workTimes.ContainsKey(today)) // Om datumet inte finns, skapa Key + new WorkTime-list
-        //    {
-        //        employee.workTimes.Add(today, new List<WorkTime>());
-        //    }
-
-        //    employee.workTimes[today] ??= new();
-
-        //    List<WorkTime> workTimes = employee.workTimes[today];
-
-        //    int workShifts = workTimes.Count;
-
-        //    if (workShifts == 0)
-        //    {
-        //        workTimes.Add(new WorkTime()
-        //        {
-        //            Id = 1
-        //        });
-        //    }
-
-        //    if (workTimes.All(wt => wt.ShiftStartTime.HasValue && wt.ShiftEndTime.HasValue))
-        //    {
-        //        workTimes.Add(new WorkTime()
-        //        {
-        //            Id = workTimes.Max(ws => ws.Id) + 1
-        //        });
-        //    }
-
-        //    int currentWorkTimeId = 0;
-
-        //    foreach (WorkTime workTime in workTimes)
-        //    {
-
-        //        if (!employee.ClockedIn && !workTime.ShiftStartTime.HasValue)
-        //        {
-        //            workTime.ShiftStartTime = timeNow;
-        //            employee.ClockedIn = true;
-        //            currentWorkTimeId = workTime.Id;
-        //            break;
-        //        }
-
-        //        if (employee.ClockedIn && workTime.ShiftStartTime.HasValue && !workTime.ShiftEndTime.HasValue)
-        //        {
-        //            workTime.ShiftEndTime = timeNow;
-        //            employee.ClockedIn = false;
-        //            currentWorkTimeId = workTime.Id;
-        //            break;
-
-        //        }
-
-        //    }
-        //    return currentWorkTimeId;
-
-
-        //}
-
-        //public void ClockOut(DateTime endTime, int id)
-        //{
-        //    var employee = GetById(id);
-
-        //    if (employee.ClockedIn) employee.ClockedIn = false;
-
-        //    employee.workTimes[endTime.Date].ShiftEndTime = TimeOnly.FromTimeSpan(endTime.TimeOfDay);
-
-        //    //return employee.ClockedIn;
-
-        //}
 
     }
 }
