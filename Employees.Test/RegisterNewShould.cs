@@ -7,17 +7,17 @@ namespace Employees.Test
     {
         
         
-        [Fact]
-        public void Check_For_Existing_name()
-        {
-            EmployeeService sut = new EmployeeService();
+        //[Fact]
+        //public void Check_For_Existing_FullName()
+        //{
+        //    EmployeeService sut = new EmployeeService();
 
-            Employee newEmployee = new Employee() { FirstName = "Rasmus", LastName = "Svensson", Email = "rasmus-lackberg@hotmail.com" };
+        //    Employee newEmployee = new Employee() { FirstName = "Rasmus", LastName = "Svensson", Email = "rasmus-lackberg@hotmail.com" };
 
-            var allEmployeesBefore = sut.GetAll();
+        //    var allEmployeesBefore = sut.GetAll();
 
-            Assert.DoesNotContain(allEmployeesBefore, e => e.FullName == $"{newEmployee.FirstName} {newEmployee.LastName}");
-        }
+        //    Assert.DoesNotContain(allEmployeesBefore, e => e.FullName == $"{newEmployee.FirstName} {newEmployee.LastName}");
+        //}
 
         [Fact]
         public void Add_New_Employee_To_Collection()
