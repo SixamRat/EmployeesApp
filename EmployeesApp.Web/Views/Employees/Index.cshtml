@@ -10,7 +10,7 @@
 	{
 		<li>
 			<div class="list-row">
-				<a asp-controller="Employees" asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
+				<a asp-controller="Employees" asp-action="Details" asp-route-id="@item.Id">@item.FirstName</a>
 				<partial name="_ShiftClockStamp" model="item" />
 			</div>
 		</li>

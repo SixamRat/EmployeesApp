@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace EmployeesApp.Web.Models
 {
@@ -9,8 +10,15 @@ namespace EmployeesApp.Web.Models
 
         [NoDigits(ErrorMessage = "Namnet får ej innehålla siffror!")]
         [Required(ErrorMessage = "Du måste ange namn!")]
-        [Display(Name = "Namn", Prompt = "Ange ditt namn.")]
-        public required string Name { get; set; }
+        [Display(Name = "Namn", Prompt = "Ange ditt förnamn.")]
+        public required string FirstName { get; set; }
+
+        [NoDigits(ErrorMessage = "Namnet får ej innehålla siffror!")]
+        [Required(ErrorMessage = "Du måste ange namn!")]
+        [Display(Name = "Namn", Prompt = "Ange ditt förnamn.")]
+        public required string LastName { get; set; }
+
+        public string FullName => $"{FirstName} {LastName}";
 
         [Required(ErrorMessage = "Du måste ange email!")]
         [EmailAddress(ErrorMessage = "Måste ange giltig emailadress!")]

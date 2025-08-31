@@ -1,15 +1,15 @@
 ﻿@model Employee
 @{
-	ViewBag.Title = $"{Model.Name} Details";
-	ViewBag.Header = $"Details for {Model.Name}";
+	ViewBag.Title = $"{Model.FirstName} Details";
+	ViewBag.Header = $"Details for {Model.FirstName}";
 	var today = DateOnly.FromDateTime(DateTime.Today);
 }
 <partial name="_ShiftClockStamp" model="Model" />
 <p>Employee ID: @Model.Id</p>
-<p>Employee name: @Model.Name</p>
+<p>Employee name: @Model.FirstName</p>
 <p>Employee email: @Model.Email</p>
 
-<h3>@(Model.Name + "'s") Arbetspass för @today</h3>
+<h3>@(Model.FirstName + "'s") Arbetspass för @today</h3>
 
 @{
 	if (Model.WorkShifts.Count > 0 && Model.WorkShifts.TryGetValue(today, out var list))

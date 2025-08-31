@@ -8,15 +8,15 @@ namespace Employees.Test
         
         
         [Fact]
-        public void Not_Exist_In_Initial_Collection()
+        public void Check_For_Existing_name()
         {
             EmployeeService sut = new EmployeeService();
 
-            Employee newEmployee = new Employee() { Name = "Rasmus", Email = "rasmus-lackberg@hotmail.com" };
+            Employee newEmployee = new Employee() { FirstName = "Rasmus", LastName = "Svensson", Email = "rasmus-lackberg@hotmail.com" };
 
             var allEmployeesBefore = sut.GetAll();
 
-            Assert.DoesNotContain(allEmployeesBefore, e => e.Name == newEmployee.Name && e.Email == newEmployee.Email);
+            Assert.DoesNotContain(allEmployeesBefore, e => e.FullName == $"{newEmployee.FirstName} {newEmployee.LastName}");
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace Employees.Test
         {
             EmployeeService sut = new EmployeeService();
 
-            Employee newEmployee = new Employee() { Name = "Rasmus", Email = "rasmus-lackberg@hotmail.com" };
+            Employee newEmployee = new Employee() { FirstName = "Rasmus", LastName = "Svensson", Email = "rasmus-lackberg@hotmail.com" };
 
             var allEmployeesBefore = sut.GetAll();
 
@@ -32,7 +32,10 @@ namespace Employees.Test
 
             var allEmployeesAfter = sut.GetAll();
 
-            Assert.Contains(allEmployeesAfter, e => e.Name == newEmployee.Name && e.Email == newEmployee.Email);
+            Assert.Contains(allEmployeesAfter, e => 
+                e.FirstName == newEmployee.FirstName && 
+                e.LastName == newEmployee.LastName &&
+                e.Email == newEmployee.Email);
         }
 
         [Fact]
@@ -40,7 +43,7 @@ namespace Employees.Test
         {
             EmployeeService sut = new EmployeeService();
 
-            Employee newEmployee = new Employee() { Name = "Rasmus", Email = "rasmus-lackberg@hotmail.com" };
+            Employee newEmployee = new Employee() { FirstName = "Rasmus", LastName = "Svensson", Email = "rasmus-lackberg@hotmail.com" };
 
             var allEmployeesBefore = sut.GetAll();
             int initLength = allEmployeesBefore.Length;
@@ -57,7 +60,7 @@ namespace Employees.Test
         {
             EmployeeService sut = new EmployeeService();
 
-            Employee newEmployee = new Employee() { Name = "Rasmus", Email = "rasmus-lackberg@hotmail.com" };
+            Employee newEmployee = new Employee() { FirstName = "Rasmus", LastName = "Svensson", Email = "rasmus-lackberg@hotmail.com" };
 
             sut.RegisterNew(newEmployee);
 
@@ -68,7 +71,7 @@ namespace Employees.Test
         public void Generate_Id_Max_PlusOne()
         {
             var sut = new EmployeeService();
-            Employee newEmployee = new Employee() { Name = "Rasmus", Email = "rasmus-lackberg@hotmail.com" };
+            Employee newEmployee = new Employee() { FirstName = "Rasmus", LastName = "Svensson", Email = "rasmus-lackberg@hotmail.com" };
 
             int maxId = sut.GetAll().Max(e => e.Id);
 
@@ -78,12 +81,12 @@ namespace Employees.Test
         }
 
         [Fact]
-        public void Have_Distinct_Id()
+        public void Generate_Distinct_Id()
         {
             EmployeeService sut = new EmployeeService();
 
-            Employee newEmployee1 = new Employee() { Name = "Rasmus", Email = "rasmus-lackberg@hotmail.com" };
-            Employee newEmployee2 = new Employee() { Name = "Sven", Email = "sven-lackberg@hotmail.com" };
+            Employee newEmployee1 = new Employee() { FirstName = "Rasmus", LastName = "Svensson", Email = "rasmus-lackberg@hotmail.com" };
+            Employee newEmployee2 = new Employee() { FirstName = "Sven", LastName = "Jansson", Email = "sven-lackberg@hotmail.com" };
 
             sut.RegisterNew(newEmployee1);
             sut.RegisterNew(newEmployee2);

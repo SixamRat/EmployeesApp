@@ -5,16 +5,34 @@ namespace EmployeesApp.Web.Services
     public class EmployeeService
     {
         List<Employee> _employees = new List<Employee> {
-        new Employee{Id = 1, Name = "Jonas", Email = "Jonas@testmail.com"},
-        new Employee{Id = 2, Name = "Bert", Email = "Bert@testmail.com"},
-        new Employee{Id = 3, Name = "Andreas", Email = "Andreas@testmail.com"}
+        new Employee{Id = 1, FirstName = "Jonas", LastName = "Antonsson", Email = "Jonas@testmail.com"},
+        new Employee{Id = 2, FirstName = "Bert", LastName = "Johansson", Email = "Bert@testmail.com"},
+        new Employee{Id = 3, FirstName = "Andreas", LastName = "Henriksson", Email = "Andreas@testmail.com"}
         };
 
-        public void RegisterNew(Employee employee)
+        public (bool success, string? errorMsg) RegisterNew(Employee employee)
         {
+            bool newUserRegistered = false;
+            string? errorMsg = null;
             employee.Id = _employees.Count > 0 ? _employees.Max(p => p.Id) + 1 : 1;
 
+            bool fullNameIsUnique = true;
+
+            if (_employees.Count > 0)
+            {
+                fullNameIsUnique = _employees.Any(e => e.FullName != employee.FullName);
+
+            }
+            if (!fullNameIsUnique)
+            {
+                errorMsg = "User already exists";
+                return (newUserRegistered, errorMsg);
+            }
+
+
+
             _employees.Add(employee);
+
 
         }
 
