@@ -13,6 +13,8 @@ namespace EmployeesApp.Web.Services
 
         private List<Employee> _employees;
 
+        private int _nextId;
+
         public EmployeeService(string? baseDir = null)
         {
             _dirPath = Path.Combine(baseDir ?? AppContext.BaseDirectory, "json");
@@ -20,8 +22,10 @@ namespace EmployeesApp.Web.Services
 
             Directory.CreateDirectory(_dirPath);
 
-
             _employees = LoadFromFile() ?? Seed();
+
+            _nextId = _employees.Any() ? _employees.Max(e => e.Id) + 1 : 1;
+
             SaveToFile();
         }
 
@@ -42,55 +46,55 @@ namespace EmployeesApp.Web.Services
             }
         }
 
+        // Metod med hårdkodade Seed-värden ifall filen inte kan laddas
         private List<Employee> Seed()
         {
-            List<Employee> employees =
-                [
-                    new Employee{ FirstName = "Jonas", LastName = "Antonsson", Email = "Jonas@testmail.com"},
-                    new Employee{ FirstName = "Bert", LastName = "Johansson", Email = "Bert@testmail.com"},
-                    new Employee{ FirstName = "Andreas", LastName = "Henriksson", Email = "Andreas@testmail.com"}
-
-                ];
-
-            foreach (Employee emp in _employees)
+            return new List<Employee>
             {
-                emp.Id = GenerateNewId(_employees);
-            }
-
-            return employees;
+                new() { Id = 1, FirstName = "Jonas",   LastName = "Antonsson", Email = "Jonas@testmail.com" },
+                new() { Id = 2, FirstName = "Bert",    LastName = "Johansson", Email = "Bert@testmail.com" },
+                new() { Id = 3, FirstName = "Andreas", LastName = "Henriksson", Email = "Andreas@testmail.com" },
+            };
         }
 
         private void SaveToFile()
         {
-            var tmp = _filePath + ".tmp";
+            Directory.CreateDirectory(_dirPath);
 
-            File.WriteAllText(tmp, JsonSerializer.Serialize(_employees, _json));
-            File.Replace(tmp, _filePath, _fileName);
+            var tmp = Path.Combine(_dirPath, _fileName + ".tmp");
+            var bak = Path.Combine(_dirPath, _fileName + ".bak");
 
+            var json = JsonSerializer.Serialize(_employees, _json);
+            File.WriteAllText(tmp, json);
+
+            if (File.Exists(_filePath))
+            {
+                // Byter ut befintlig fil och gör backup
+                File.Replace(tmp, _filePath, bak);
+            }
+            else
+            {
+                // Första gången: flytta in tmp-filen som “riktig”
+                File.Move(tmp, _filePath);
+            }
         }
+
 
         public (bool success, string? errorMsg) RegisterNew(Employee employee)
         {
-            bool newUserRegistered = false;
-            string? errorMsg = null;
-            employee.Id = GenerateNewId(_employees);
+            // Kollar om emailen redan finns, case-insensitive
+            bool emailExists = _employees
+                .Any(e => string.Equals(e.Email, employee.Email, StringComparison.OrdinalIgnoreCase));
 
-            bool isEmailUnique = true;
+            if (emailExists)
+                return (false, "Email already exists"); // avbryt och returnera false och errormessage
 
-            if (_employees.Count > 0)
-            {
-                isEmailUnique = _employees.Any(e => e.Email != employee.Email);
+            employee.Id = _nextId++; // sätt ID och öka med 1
 
-            }
-            if (!isEmailUnique)
-            {
-                errorMsg = "Email already exists";
-                return (newUserRegistered, errorMsg);
-            }
-            _employees.Add(employee);
-            newUserRegistered = true;
+            _employees.Add(employee); // Lägg till nya employeen
+            SaveToFile(); // Spara till json fil
 
-            return (newUserRegistered, errorMsg);
+            return (true, null); // returnera success = true och errormessage = null
         }
 
         public Employee[] GetAll()
@@ -104,7 +108,7 @@ namespace EmployeesApp.Web.Services
             return employee;
         }
 
-        public void ToggleShiftClock(int employeeId)
+        public void TogglePunchClock(int employeeId)
         {
             var today = DateOnly.FromDateTime(DateTime.Today); // Dagens datum i DateOnly
             var timeNow = TimeOnly.FromDateTime(DateTime.Now); // Tiden nu i TimeOnly
@@ -176,10 +180,6 @@ namespace EmployeesApp.Web.Services
             if (!dict.TryGetValue(day, out var list))
                 dict[day] = list = new List<WorkShift>();
             return list;
-        }
-        private static int GenerateNewId(List<Employee> empList)
-        {
-            return empList.Count == 0 ? 1 : empList.Max(e => e.Id);
         }
 
     }

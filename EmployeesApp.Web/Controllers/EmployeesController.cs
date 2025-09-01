@@ -30,13 +30,19 @@ public class EmployeesController : Controller
     [HttpPost("/create")]
     public IActionResult Create(Employee employee)
     {
-       
+
         if (!ModelState.IsValid)
             return View();
 
-        employeeService.RegisterNew(employee);
+        var (success, errorMessage) = employeeService.RegisterNew(employee);
+        if (!success)
+        {
+            ModelState.AddModelError("CreateEmployee", errorMessage ?? "Error adding new user");
+            return View();
+        }
 
         return RedirectToAction(nameof(Index));
+
     }
 
 
@@ -44,7 +50,7 @@ public class EmployeesController : Controller
     public IActionResult ToggleShiftClock(int id)
     {
 
-        employeeService.ToggleShiftClock(id);
+        employeeService.TogglePunchClock(id);
 
         var referer = Request.Headers["Referer"].ToString();
         if (!string.IsNullOrEmpty(referer))
